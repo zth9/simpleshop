@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.javak.mapper.GoodTypeMapper">
+    <cache readOnly="false"></cache>
+    <select id="selectAll" resultType="GoodType">
+        select * from good_type
+    </select>
+    <select id="selectById" resultType="GoodType" parameterType="int">
+        select * from good_type where id = #{0}
+    </select>
+</mapper>

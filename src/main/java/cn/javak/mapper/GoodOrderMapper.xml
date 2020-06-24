@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.javak.mapper.GoodOrderMapper">
+    <cache readOnly="false"></cache>
+    <insert id="insertOrder" parameterType="GoodOrder">
+        insert into good_order values (default, #{user_id}, #{good_id}, #{buy_num}, #{buy_time}, #{state}, #{money}, #{orderId})
+    </insert>
+    <select id="selAllOrderNo" resultType="java.lang.String" parameterType="int">
+        select orderId from good_order where user_id = #{0} and state = #{1} group by orderId;
+    </select>
+    <select id="selAllOrder" resultType="GoodOrder" parameterType="java.lang.String">
+        select * from good_order where orderId = #{0}
+    </select>
+    <delete id="delOrder" parameterType="java.lang.String">
+        delete from good_order where orderId = #{0}
+    </delete>
+    <update id="updOrder" parameterType="java.lang.String">
+        update good_order set buy_time=now(),state=2 where orderId = #{0}
+    </update>
+    <select id="selMoney" resultType="float" parameterType="java.lang.String">
+        select sum(money) from good_order where orderId = #{0}
+    </select>
+</mapper>

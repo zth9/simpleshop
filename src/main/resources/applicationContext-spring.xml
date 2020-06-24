@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd" default-autowire="byType">
+    <context:component-scan base-package="cn.javak.service.impl, cn.javak.utils"/>
+
+    <!-- 数据源封装类,数据源:获取-->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/xmshop?characterEncoding=utf8&amp;useSSL=false&amp;serverTimezone=UTC&amp;autoReconnect=true"/>
+        <property name="username" value="root"/>
+        <property name="password" value="数据库密码"/>
+    </bean>
+
+    <!-- 创建sqlSessionFactoryBean对象 指定数据源-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:mybatis.xml"/>
+    </bean>
+    <!-- 创建扫描器 相当于mybatis.xml中mappers下的package标签 指定mapper包以及引用的sqlSessionFactoryBean对象
+            会自动为mapper接口创建对象
+    -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="cn.javak.mapper"/>
+        <!--<property name="sqlSessionFactory" ref="factory"></property>-->
+        <!-- 当使用软编码注入时,使用下面属性,因为使用ref引用其他对象时,自动注入优先级最高,
+        在加载软编码文件之前执行,但此时由于软编码文件未导入,会导致dataSource取不到对应的参数.
+        而使用下面这种字符串赋值的方式,不会去找datasource,datasource才能正常初始化-->
+        <!--<property name="sqlSessionFactoryBeanName" value="factory"></property>-->
+    </bean>
+
+    <!-- 使用cglib动态代理,使得代理bean能够转型到impl实现类-->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <!-- 配置Spring提供的事务管理器DataSourceTransactionManager-->
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- 配置事务作用域-->
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <tx:attributes>
+            <!--
+            name 那些方法需要事务控制
+            readOnly 告诉数据库此事务是(true)否(false)为只读事务
+                只读事务数据库不会对该事务做任何操作,视数据库优化,会对性能由一定的提升,所以只要是查询的事务,建议设置该属性为true
+                如果为false(默认),为需要提交的事务 增删改
+            -->
+            <tx:method name="ins*"/>
+            <tx:method name="del*"/>
+            <tx:method name="upd*"/>
+            <tx:method name="*" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+    <!-- 配置业务切点-->
+    <aop:config>
+        <aop:pointcut id="txPointcut" expression="execution(* cn.javak.service.impl.*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut"/>
+    </aop:config>
+</beans>

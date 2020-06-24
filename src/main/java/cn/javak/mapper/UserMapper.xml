@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.javak.mapper.UserMapper">
+    <cache readOnly="false"></cache>
+    <insert id="insert" parameterType="UserInfo">
+        insert into user values(default, #{name}, #{password}, #{money})
+    </insert>
+    <delete id="deleteById" parameterType="int">
+        delete from user where id=#{id}
+    </delete>
+    <update id="update" parameterType="UserInfo">
+        update user set name=#{name}, password=#{password}, money=#{money} where id=#{id}
+    </update>
+    <select id="selectAll" resultType="UserInfo">
+        select * from user
+    </select>
+    <select id="selectById" resultMap="UserWithRole" parameterType="int">
+        select * from user where id = #{0}
+    </select>
+    <select id="selectByName" resultMap="UserWithRole" parameterType="java.lang.String">
+        select * from user where name = #{0}
+    </select>
+    <select id="selByUser" resultType="UserInfo" parameterType="UserInfo">
+        select * from user where name=#{name} and password=#{password}
+    </select>
+    <resultMap id="UserWithRole" type="UserInfo">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="password" property="password"/>
+        <result column="money" property="money"/>
+        <collection property="roleList" column="id" select="cn.javak.mapper.RoleMapper.selByUserId" javaType="java.util.List"/>
+    </resultMap>
+</mapper>

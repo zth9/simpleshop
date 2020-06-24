@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace 为mapper起名，通过namespace.id调用不同的标签-->
+<mapper namespace="cn.javak.mapper.CartMapper">
+    <cache readOnly="false"></cache>
+    <insert id="insert" parameterType="Cart">
+        insert into cart values(default, #{user_id}, #{good_id}, #{num}, now(), #{money}, 1)
+    </insert>
+    <delete id="deleteById" parameterType="int">
+        delete from cart where id=#{id}
+    </delete>
+    <update id="update" parameterType="Cart">
+        update cart set num=#{num}, money=#{money} where user_id=#{user_id} and good_id=#{good_id}
+    </update>
+    <update id="updateStatus" parameterType="Cart">
+        update cart set flag=#{flag} where id=#{id}
+    </update>
+    <select id="selectAllByUserId" resultType="Cart" parameterType="int">
+        select * from cart where user_id = #{0}
+    </select>
+    <select id="selectById" resultType="Cart" parameterType="int">
+        select * from good where id = #{0}
+    </select>
+    <select id="selSelect" resultType="Cart" parameterType="int">
+        select * from cart where user_id = #{0} and flag = 1
+    </select>
+    <select id="selNoSelect" resultType="Cart" parameterType="int">
+        select * from cart where user_id = #{0} and flag = 2
+    </select>
+    <select id="selByUserIdAndGoodId" resultType="Cart" parameterType="Cart">
+        select * from cart where user_id = #{user_id} and good_id = #{good_id} or id=#{id}
+    </select>
+    <select id="selCount" resultType="int" parameterType="int">
+        select count(*) from cart where user_id = #{0}
+    </select>
+
+</mapper>

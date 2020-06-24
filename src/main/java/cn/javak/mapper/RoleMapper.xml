@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.javak.mapper.RoleMapper">
+    <cache readOnly="false"></cache>
+    <select id="selByUserId" resultType="Role" parameterType="int">
+        select * from role where id in (select roleId from user_role where userId = #{0})
+    </select>
+    <insert id="addRoleByUserId" parameterType="int">
+        insert into user_role values(#{0}, 1)
+    </insert>
+</mapper>

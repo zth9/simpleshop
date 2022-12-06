@@ -33,7 +33,7 @@
     <jackson-version>2.4.1</jackson-version>
     <commons-fileupload-version>1.3.1</commons-fileupload-version>
     <!--ftpClient-->
-    <ftpClient-version>3.3</ftpClient-version>
+    <ftpClient-version>3.9.0</ftpClient-version>
     <jedis-version>2.8.1</jedis-version>
   </properties>
 
